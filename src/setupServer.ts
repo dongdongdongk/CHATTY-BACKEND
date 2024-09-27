@@ -21,8 +21,10 @@ import "express-async-errors";
 import { config } from "./config";
 import applicationRoutes from './routes';
 import { CustomeError, IErrorResponse } from "./shared/globals/helpers/error-handler";
+import Logger from "bunyan";
 
 const SERVER_PORT = 5000;
+const log: Logger = config.createLogger('server');
 
 export class ChattyServer {
     private app: Application;
@@ -76,7 +78,7 @@ export class ChattyServer {
         })
 
         app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
-            console.log(error);
+            log.error(error);
             if( error instanceof CustomeError) {
                 return res.status(error.statusCode).json(error.serializeErrors());
             }
@@ -91,7 +93,7 @@ export class ChattyServer {
             this.startHttpServer(httpServer);
             this.socketIOConnections(socketIO);
         } catch (error) {
-            console.log(error);
+            log.error(error);
         }
     }
 
@@ -110,9 +112,9 @@ export class ChattyServer {
     }
 
     private startHttpServer(httpServer: http.Server): void {
-        console.log(`Server has started with process ${process.pid}`);
+        log.info(`Server has started with process ${process.pid}`);
         httpServer.listen(SERVER_PORT, () => {
-            console.log(`Server running on port ${SERVER_PORT}`);
+            log.info(`Server running on port ${SERVER_PORT}`);
         });
     }
 
