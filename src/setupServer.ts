@@ -20,7 +20,7 @@ import compression from "compression";
 import "express-async-errors";
 import { config } from "./config";
 import applicationRoutes from './routes';
-import { CustomeError, IErrorResponse } from "./shared/globals/helpers/error-handler";
+import { CustomError, IErrorResponse } from "./shared/globals/helpers/error-handler";
 import Logger from "bunyan";
 
 const SERVER_PORT = 5000;
@@ -79,7 +79,7 @@ export class ChattyServer {
 
         app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
             log.error(error);
-            if( error instanceof CustomeError) {
+            if( error instanceof CustomError) {
                 return res.status(error.statusCode).json(error.serializeErrors());
             }
             next();

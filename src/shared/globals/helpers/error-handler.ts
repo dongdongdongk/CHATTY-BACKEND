@@ -13,7 +13,7 @@ export interface IError {
     status: string;
 }
 
-export abstract class CustomeError extends Error {
+export abstract class CustomError extends Error {
     abstract statusCode: number;
     abstract status:string;
 
@@ -30,7 +30,7 @@ export abstract class CustomeError extends Error {
     }
 }
 
-export class JoiRequestValidationError extends CustomeError {
+export class JoiRequestValidationError extends CustomError {
     statusCode = HTTP_STATUS.BAD_REQUEST;
     status = 'error';
 
@@ -39,7 +39,7 @@ export class JoiRequestValidationError extends CustomeError {
     }
 }
 
-export class BadRequestError extends CustomeError {
+export class BadRequestError extends CustomError {
     statusCode = HTTP_STATUS.BAD_REQUEST;
     status = 'error';
 
@@ -48,7 +48,7 @@ export class BadRequestError extends CustomeError {
     }
 }
 
-export class NotFoundError extends CustomeError {
+export class NotFoundError extends CustomError {
     statusCode = HTTP_STATUS.NOT_FOUND;
     status = 'error';
 
@@ -57,7 +57,7 @@ export class NotFoundError extends CustomeError {
     }
 }
 
-export class NotAuthorizedError extends CustomeError {
+export class NotAuthorizedError extends CustomError {
     statusCode = HTTP_STATUS.UNAUTHORIZED;
     status = 'error';
 
@@ -66,7 +66,7 @@ export class NotAuthorizedError extends CustomeError {
     }
 }
 
-export class FileTooLargeError extends CustomeError {
+export class FileTooLargeError extends CustomError {
     statusCode = HTTP_STATUS.REQUEST_TOO_LONG;
     status = 'error';
 
@@ -76,7 +76,7 @@ export class FileTooLargeError extends CustomeError {
 }
 
 
-export class ServerError extends CustomeError {
+export class ServerError extends CustomError {
     statusCode = HTTP_STATUS.SERVICE_UNAVAILABLE;
     status = 'error';
 
