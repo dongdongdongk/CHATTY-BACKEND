@@ -1,0 +1,27 @@
+module.exports = {
+  root: true, // 이 설정 파일이 루트 구성 파일임을 지정
+  parser: '@typescript-eslint/parser', // TypeScript 코드를 파싱하기 위한 파서 지정
+  plugins: [
+    '@typescript-eslint' // TypeScript 관련 규칙을 사용할 수 있도록 플러그인 추가
+  ],
+  extends: [
+    'eslint:recommended', // ESLint의 추천 기본 규칙 사용
+    'plugin:@typescript-eslint/recommended', // TypeScript에 대한 추천 규칙 사용
+    'prettier' // Prettier와 충돌하는 규칙을 비활성화
+  ],
+  parserOptions: {
+    project: true,
+    ecmaVersion: 'latest',
+    sourceType: 'module'
+  },
+  rules: {
+    semi: [2, 'always'], // 항상 세미콜론을 사용해야 함
+    'space-before-function-paren': [0, { anonymous: 'always', named: 'always' }], // 함수 괄호 앞의 공백 설정 (비활성화)
+    camelcase: 0, // 카멜 케이스 규칙 비활성화
+    'no-return-assign': 0, // return문에서 할당 비활성화
+    quotes: ['error', 'single'], // 단일 따옴표를 사용해야 함
+    '@typescript-eslint/no-non-null-assertion': 'off', // 널 안전성 검사를 비활성화
+    '@typescript-eslint/no-namespace': 'off', // 네임스페이스 사용을 비활성화
+    '@typescript-eslint/explicit-module-boundary-types': 'off' // 모듈 경계 타입 명시 요구 비활성화
+  }
+};
