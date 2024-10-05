@@ -1,4 +1,4 @@
-import { Application, json, urlencoded, Response, Request, NextFunction, application } from 'express';
+import { Application, json, urlencoded, Response, Request, NextFunction } from 'express';
 import http from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -111,6 +111,6 @@ export class ChattyServer {
   }
 
   private socketIOConnections(io: Server): void {
-    log.info('소켓IOC연결완료')
+    log.info('소켓IOC연결완료',io);
   }
 }
