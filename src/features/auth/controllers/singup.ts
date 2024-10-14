@@ -7,8 +7,9 @@ import { authService } from '@service/db/auth.service';
 import { BadRequestError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/heplers';
 import { UploadApiResponse } from 'cloudinary';
-import { upload } from '@global/helpers/cloudinary-upload';
+import { upload } from '@global/helpers/cloudinary-upload'; 
 import { ObjectId } from 'mongodb';
+import  HTTP_STATUS from 'http-status-codes';
 
 export class SignUp {
   @joiValidation(signupSchema)
@@ -37,6 +38,8 @@ export class SignUp {
     if(!result?.public_id) {
       throw new BadRequestError('File upload Error accurred. Try again')
     }
+
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', authDate});
   }
 
   private signupData(data: ISignUpData): IAuthDocument {
