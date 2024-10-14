@@ -111,6 +111,6 @@ export class ChattyServer {
   }
 
   private socketIOConnections(io: Server): void {
-    log.info('소켓IOC연결완료',io);
+    log.info('소켓IOC연결완료');
   }
 }
