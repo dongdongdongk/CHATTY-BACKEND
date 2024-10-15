@@ -1,4 +1,3 @@
-// import { ObjectId } from 'mongodb';
 import { Request, Response } from 'express';
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { signupSchema } from '@auth/schemes/signup';
@@ -35,8 +34,9 @@ export class SignUp {
     const result: UploadApiResponse = await upload(avatarImage, `${userObjectId}`, true, true) as UploadApiResponse;
     // https://res.cloudinary.com/123/23reiqej
     // https://res.cloudinary.com/123/439fjemfm
+    console.log(result);
     if(!result?.public_id) {
-      throw new BadRequestError('File upload Error accurred. Try again')
+      throw new BadRequestError('File upload Error accurred. Try again');
     }
 
     res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', authDate});

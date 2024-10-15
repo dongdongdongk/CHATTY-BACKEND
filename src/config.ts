@@ -28,7 +28,7 @@ class Config {
     this.CLIENT_URL = process.env.CLIENT_URL || '';
     this.CLOUD_NAME = process.env.CLOUD_NAME || '';
     this.CLOUD_API_KEY = process.env.CLOUD_API_KEY || '';
-    this.CLOUD_API_SECRET = process.env.CLOUD_SECRET || '';
+    this.CLOUD_API_SECRET = process.env.CLOUD_API_SECRET || '';
   }
 
   public createLogger(name: string): bunyan {
@@ -45,10 +45,13 @@ class Config {
 
   public cloudinaryConfig(): void {
     cloudinary.v2.config({
-      cloud_name : this.CLOUD_NAME,
-      api_key : this.CLOUD_API_KEY,
-      api_secret : this.CLOUD_API_SECRET
+      cloud_name:this.CLOUD_NAME,
+      api_key:this.CLOUD_API_KEY,
+      api_secret:this.CLOUD_API_SECRET,
     });
+    console.log('api_secret',this.CLOUD_API_SECRET);
+    console.log('api_key',this.CLOUD_API_KEY);
+    console.log('cloud_name',this.CLOUD_NAME);
   }
 }
 
