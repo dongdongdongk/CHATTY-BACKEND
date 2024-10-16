@@ -4,7 +4,7 @@ import { config } from '@root/config';
 
 export type RedisClient = ReturnType<typeof createClient>;
 
-export abstract class BaseChache {
+export abstract class BaseCache {
   client:RedisClient;
   log: Logger;
 
