@@ -1,4 +1,4 @@
-import { SignUp } from '@auth/controllers/singup';
+import { SignUp } from '@auth/controllers/signup';
 import express, { Router } from 'express';
 
 class AuthRoutes {

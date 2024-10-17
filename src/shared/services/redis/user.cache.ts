@@ -1,12 +1,17 @@
 import { BaseCache } from '@service/redis/base.caches';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { config } from '@root/config';
+import Logger from 'bunyan';
+import { ServerError } from '@global/helpers/error-handler';
+
+const log: Logger = config.createLogger('redisConnection');
 
 export class UserCache extends BaseCache {
   constructor() {
     super('userCache');
   }
 
-  public async saveUserToCache(key: string, userId: string, createdUser: IUserDocument): Promise<void> {
+  public async saveUserToCache(key: string, userUId: string, createdUser: IUserDocument): Promise<void> {
     const createdAt = new Date();
     const {
       _id,
@@ -80,5 +85,16 @@ export class UserCache extends BaseCache {
       `${bgImageId}`
     ];
     const dataToSave: string[] = [...firstList, ...secondList, ...thirdList];
+
+    try {
+      if(!this.client.isOpen) {
+        await this.client.connect();
+      }
+      await this.client.ZADD('user', { score: parseInt(userUId, 10), value:`${key}`});
+      await this.client.HSET(`users:${key}`, dataToSave);
+    } catch (error) {
+      log.error(error);
+      throw new ServerError('Server error. Try again.');
+    }
   }
 }

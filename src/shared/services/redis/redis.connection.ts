@@ -1,10 +1,10 @@
 import Logger from 'bunyan';
 import { config } from '@root/config';
-import { BaseChache } from '@service/redis/base.caches';
+import { BaseCache } from '@service/redis/base.caches';
 
 const log: Logger = config.createLogger('redisConnection');
 
-class RedisConnection extends BaseChache {
+class RedisConnection extends BaseCache {
   constructor() {
     super('redisConnection');
   }
