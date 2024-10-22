@@ -16,7 +16,28 @@ export abstract class BaseQueue {
 
   constructor(queueName: string) {
     this.queue = new Queue(queueName, `${config.REDIS_HOST}`);
-    bullAdapter.push(new BullAdapter)
+    bullAdapter.push(new BullAdapter(this.queue));
+    bullAdapter = [...new Set(bullAdapter)];
+    serverAdapter = new ExpressAdapter();
+    serverAdapter.setBasePath('/queues');
+
+    createBullBoard({
+      queues: bullAdapter,
+      serverAdapter
+    });
+
+    this.log = config.createLogger(`${queueName}Queue`);
+
+    this.queue.on('completed', (job: Job) => {
+      job.remove();
+    });
+
+    this.queue.on('global:completed', (jobId: string) => {
+      this.log.info(`Job ${jobId} completed`);
+    });
+
+    this.queue.on('global:stalled', (jobId: string) => {
+      this.log.info(`Job ${jobId} is stalled`);
+    });
   }
-  
 }
