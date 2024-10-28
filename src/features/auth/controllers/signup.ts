@@ -12,8 +12,10 @@ import HTTP_STATUS from 'http-status-codes';
 import { UserCache } from '@service/redis/user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { omit } from 'lodash';
+import JWT from 'jsonwebtoken';
 import { authQueue } from '@service/queues/auth.queue';
 import { userQueue } from '@service/queues/user.queue';
+import { config } from '@root/config';
 
 const userCache: UserCache = new UserCache();
 
@@ -39,12 +41,12 @@ export class SignUp {
     });
 
     const result: UploadApiResponse = (await upload(avatarImage, `${userObjectId}`, true, true)) as UploadApiResponse;
-    // https://res.cloudinary.com/123/23reiqej
-    // https://res.cloudinary.com/123/439fjemfm
-    console.log(result);
     if (!result?.public_id) {
       throw new BadRequestError('File upload Error accurred. Try again');
     }
+    // https://res.cloudinary.com/123/23reiqej
+    // https://res.cloudinary.com/123/439fjemfm
+    // console.log(result);
 
     //Add to redis cache
     const userDataForCache: IUserDocument = SignUp.prototype.userData(authDate, userObjectId);
@@ -55,7 +57,24 @@ export class SignUp {
     omit(userDataForCache, ['uId', 'username', 'email', 'avatarColor', 'password']);
     authQueue.addAuthUserJob('addAuthUserToDB', { value: userDataForCache});
     userQueue.addUserJob('addUserToDB', { value: userDataForCache});
-    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', authDate });
+
+    const userJwt: string = SignUp.prototype.signupToken(authDate, userObjectId);
+    req.session = { jwt: userJwt };
+
+    res.status(HTTP_STATUS.CREATED).json({ message: 'User created successfully', user: userDataForCache, token: userJwt});
+  }
+
+  private signupToken (data: IAuthDocument, userObjectId: ObjectId): string {
+    return JWT.sign(
+      {
+        userId: userObjectId,
+        uId: data.uId,
+        email: data.email,
+        username: data.username,
+        avatarColor: data.avatarColor
+      },
+      config.JWT_TOKEN!
+    );
   }
 
   private signupData(data: ISignUpData): IAuthDocument {
