@@ -11,7 +11,7 @@ export class Helpers {
     return str.toLowerCase();
   }
 
-  static generateRandomIntegers(integerLength: number) : number {
+  static generateRandomIntegers(integerLength: number): number {
     const characters = '0123456789';
     let result = ' ';
     const charactersLength = characters.length;
@@ -19,5 +19,16 @@ export class Helpers {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return parseInt(result, 10);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static parseJson(prop: string): any {
+    try {
+      JSON.parse(prop);
+    } catch (error) {
+      console.log('JSON 파싱 중 에러 발생:', error);
+      console.log('파싱 시도한 데이터:', prop);
+      return prop;
+    }
   }
 }
