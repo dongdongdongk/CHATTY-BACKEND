@@ -12,8 +12,34 @@ class UserService {
     const users: IUserDocument[] = await UserModel.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(userId)} },
       { $lookup: { from: 'Auth', localField: 'authId', foreignField: '_id', as: 'authId'} },
-      { $unwind: '$authId'}
+      { $unwind: '$authId'},
+      { $project: this.aggregateProject()}
     ]);
+    return users[0];
+  }
+
+  private aggregateProject() {
+    return {
+      _id: 1,
+      username: '$authId.username',
+      uId: '$authId.uId',
+      email: '$authId.email',
+      avatarColor: '$authId.avatarColor',
+      createAt: '$authId.createAt',
+      work: 1,
+      school: 1,
+      quote: 1,
+      location: 1, 
+      blocked: 1,
+      blockedBy: 1,
+      followersCount: 1,
+      followingCount: 1,
+      notifications: 1,
+      social: 1,
+      bgImageVersion: 1,
+      bgImageId: 1,
+      profilePicture: 1,
+    };
   }
 }
 
