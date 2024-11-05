@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { UserCache } from '@service/redis/user.cache';
 import { IUserDocument } from '@user/interfaces/user.interface';
+import { userService } from '@service/db/user.service';
+import HTTP_STATUS from 'http-status-codes';
 
 const userCache: UserCache = new UserCache();
 
@@ -9,6 +11,15 @@ export class CurrentUser {
     let isUser = false;
     let token = null;
     let user = null;
-    const cashUser: IUserDocument = await userCache.getUserFromCache();
+    const cashUser: IUserDocument = await userCache.getUserFromCache(`${req.currentUser!.userId}`) as IUserDocument;
+
+    const existingUser: IUserDocument = cashUser ? cashUser : await userService.getUserById(`${req.currentUser!.userId}`);
+
+    if(Object.keys(existingUser).length) {
+      isUser = true;
+      token = req.session?.jwt;
+      user = existingUser;
+    }
+    res.status(HTTP_STATUS.OK).json({token, isUser, user});
   }
 }
