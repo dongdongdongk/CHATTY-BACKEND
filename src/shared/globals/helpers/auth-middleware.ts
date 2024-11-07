@@ -27,3 +27,5 @@ export class AuthMiddleware {
     next();
   }
 }
+
+export const authMiddleware: AuthMiddleware = new AuthMiddleware();
