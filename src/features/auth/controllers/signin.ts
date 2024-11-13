@@ -9,6 +9,7 @@ import { loginSchema } from '@auth/schemes/signin';
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
 import { IUserDocument } from '@user/interfaces/user.interface';
 import { userService } from '@service/db/user.service';
+import { mailTransport } from '@service/emails/mail.transport';
 
 export class SignIn {
   @joiValidation(loginSchema)
@@ -29,7 +30,7 @@ export class SignIn {
 
     const userJwt: string = JWT.sign(
       {
-        userId: user._id,
+        userId: existingUser._id,
         uId: existingUser.uId,
         email: existingUser.email,
         username: existingUser.username,
@@ -37,6 +38,7 @@ export class SignIn {
       },
       config.JWT_TOKEN!
     );
+    await mailTransport.sendEmail('travon.gulgowski89@ethereal.email', 'Test development email', 'This is the test email' );
     req.session = { jwt: userJwt};
     
     const userDocument: IUserDocument = {
