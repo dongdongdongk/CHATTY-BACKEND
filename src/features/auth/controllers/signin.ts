@@ -38,7 +38,7 @@ export class SignIn {
       },
       config.JWT_TOKEN!
     );
-    await mailTransport.sendEmail('travon.gulgowski89@ethereal.email', 'Test development email', 'This is the test email' );
+    // 이메일 발송 테스트 await mailTransport.sendEmail('travon.gulgowski89@ethereal.email', 'Test development email', 'This is the test email' );
     req.session = { jwt: userJwt};
     
     const userDocument: IUserDocument = {
