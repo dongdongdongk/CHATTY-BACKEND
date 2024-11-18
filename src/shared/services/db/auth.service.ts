@@ -34,6 +34,14 @@ class AuthService {
     const user: IAuthDocument = (await AuthModel.findOne({ email: Helpers.lowerCase(email) }).exec()) as IAuthDocument;
     return user;
   }
+
+  public async getAuthUserByPasswordToken(token: string): Promise<IAuthDocument> {
+    const user: IAuthDocument = (await AuthModel.findOne({
+      passwordResetToken : token,
+      passwordResetExpires: { $gt: Date.now() }
+    }).exec()) as IAuthDocument;
+    return user;
+  }
 }
 
 export const authService: AuthService = new AuthService();
