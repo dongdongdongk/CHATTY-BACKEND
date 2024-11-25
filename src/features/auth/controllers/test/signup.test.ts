@@ -5,8 +5,8 @@ import { CustomError } from '@global/helpers/error-handler';
 import { authMock, authMockRequest, authMockResponse } from '@root/mocks/auth.mock';
 import { authService } from '@service/db/auth.service';
 import { UserCache } from '@service/redis/user.cache';
-import { version } from 'joi';
 
+jest.useFakeTimers();
 jest.mock('@service/queues/base.queue');
 jest.mock('@service/redis/user.cache');
 jest.mock('@service/queues/user.queue');
@@ -15,6 +15,14 @@ jest.mock('@global/helpers/cloudinary-upload');
 
 
 describe('SignUp', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.clearAllTimers();
+  });
 
   it('should throw an error if username is not available', () => {
     const req: Request = authMockRequest({}, {
@@ -106,6 +114,7 @@ describe('SignUp', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(authService, 'getUserByUsernameOrEamil').mockResolvedValue(null as any);
     const userSpy = jest.spyOn(UserCache.prototype, 'saveUserToCache');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jest.spyOn(cloudinaryUploads, 'upload').mockImplementation((): any => Promise.resolve({
       version: '1234545454', public_id: '123456'
     }));
