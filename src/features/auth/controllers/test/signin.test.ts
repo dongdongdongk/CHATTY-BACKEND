@@ -82,44 +82,44 @@ describe('SignIn', () => {
     });
   });
 
-  // it('should throw "Invalid credentials" if username does not exist', () => {
-  //   const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
-  //   const res: Response = authMockResponse();
-  //   jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValueOnce(null as any);
+  it('should throw "Invalid credentials" if username does not exist', () => {
+    const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
+    const res: Response = authMockResponse();
+    jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValueOnce(null as any);
 
-  //   SignIn.prototype.read(req, res).catch((error: CustomError) => {
-  //     expect(authService.getAuthUserByUsername).toHaveBeenCalledWith(Helpers.firstLetterUppercase(req.body.username));
-  //     expect(error.statusCode).toEqual(400);
-  //     expect(error.serializeErrors().message).toEqual('Invalid credentials');
-  //   });
-  // });
+    SignIn.prototype.read(req, res).catch((error: CustomError) => {
+      expect(authService.getAuthUserByUsername).toHaveBeenCalledWith(Helpers.firstletterUppercase(req.body.username));
+      expect(error.statusCode).toEqual(400);
+      expect(error.serializeErrors().message).toEqual('Invalid credentials');
+    });
+  });
 
-  // it('should throw "Invalid credentials" if password does not exist', () => {
-  //   const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
-  //   const res: Response = authMockResponse();
-  //   jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValueOnce(null as any);
+  it('should throw "Invalid credentials" if password does not exist', () => {
+    const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
+    const res: Response = authMockResponse();
+    jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValueOnce(null as any);
 
-  //   SignIn.prototype.read(req, res).catch((error: CustomError) => {
-  //     expect(authService.getAuthUserByUsername).toHaveBeenCalledWith(Helpers.firstLetterUppercase(req.body.username));
-  //     expect(error.statusCode).toEqual(400);
-  //     expect(error.serializeErrors().message).toEqual('Invalid credentials');
-  //   });
-  // });
+    SignIn.prototype.read(req, res).catch((error: CustomError) => {
+      expect(authService.getAuthUserByUsername).toHaveBeenCalledWith(Helpers.firstletterUppercase(req.body.username));
+      expect(error.statusCode).toEqual(400);
+      expect(error.serializeErrors().message).toEqual('Invalid credentials');
+    });
+  });
 
-  // it('should set session data for valid credentials and send correct json response', async () => {
-  //   const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
-  //   const res: Response = authMockResponse();
-  //   authMock.comparePassword = () => Promise.resolve(true);
-  //   jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValue(authMock);
-  //   jest.spyOn(userService, 'getUserByAuthId').mockResolvedValue(mergedAuthAndUserData);
+  it('should set session data for valid credentials and send correct json response', async () => {
+    const req: Request = authMockRequest({}, { username: USERNAME, password: PASSWORD }) as Request;
+    const res: Response = authMockResponse();
+    authMock.comparePassword = () => Promise.resolve(true);
+    jest.spyOn(authService, 'getAuthUserByUsername').mockResolvedValue(authMock);
+    // jest.spyOn(userService, 'getUserByAuthId').mockResolvedValue(mergedAuthAndUserData);
 
-  //   await SignIn.prototype.read(req, res);
-  //   expect(req.session?.jwt).toBeDefined();
-  //   expect(res.status).toHaveBeenCalledWith(200);
-  //   expect(res.json).toHaveBeenCalledWith({
-  //     message: 'User login successfully',
-  //     user: mergedAuthAndUserData,
-  //     token: req.session?.jwt
-  //   });
-  // });
+    await SignIn.prototype.read(req, res);
+    expect(req.session?.jwt).toBeDefined();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'User login successfully',
+      user: authMock,
+      token: req.session?.jwt
+    });
+  });
 });
