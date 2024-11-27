@@ -1,5 +1,5 @@
 import mongoose, { model, Model, Schema } from 'mongoose';
-import { IPostDocument } from '@post/';
+import { IPostDocument } from '@post/interfaces/post.interface';
 
 const postSchema: Schema = new Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
