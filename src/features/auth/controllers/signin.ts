@@ -50,16 +50,18 @@ export class SignIn {
     // const template: string = forgotPasswordTemplate.passwordResetTemplate(existingUser.username!, resetLink);
     // emailQueue.addEmailJob('forgotPasswordEmail',{ template, receiverEmail: 'roosevelt.quigley@ethereal.email', subject:'reset email'});
     
-    const templateParams: IResetPasswordParams = {
-      username: existingUser.username!,
-      email: existingUser.email,
-      ipaddress: publicIP.address(),
-      date: moment().format('DD/MM/YYYY HH:mm')
-    };
-    const template: string = resetPasswordTemplate.passwordResetTemplate(templateParams);
-    emailQueue.addEmailJob('forgotPasswordEmail',{ template, receiverEmail: 'roosevelt.quigley@ethereal.email', subject:'password reset email'});
 
-    req.session = { jwt: userJwt};
+    // 리셋 패스워드 
+    // const templateParams: IResetPasswordParams = {
+    //   username: existingUser.username!,
+    //   email: existingUser.email,
+    //   ipaddress: publicIP.address(),
+    //   date: moment().format('DD/MM/YYYY HH:mm')
+    // };
+    // const template: string = resetPasswordTemplate.passwordResetTemplate(templateParams);
+    // emailQueue.addEmailJob('forgotPasswordEmail',{ template, receiverEmail: 'roosevelt.quigley@ethereal.email', subject:'password reset email'});
+
+    // req.session = { jwt: userJwt};
     
     const userDocument: IUserDocument = {
       ...user,
