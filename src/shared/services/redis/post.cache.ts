@@ -34,7 +34,7 @@ export class PostCashe extends BaseCache {
       createdAt
     } = createdPost;
 
-    const firstList: string[] =[
+    const firstList: string[] = [
       '_id',
       `${_id}`,
       'userId',
@@ -56,7 +56,7 @@ export class PostCashe extends BaseCache {
       'privacy',
       `${privacy}`,
       'gifUrl',
-      `${gifUrl}`,
+      `${gifUrl}`
     ];
 
     const secondList: string[] = [
@@ -80,12 +80,21 @@ export class PostCashe extends BaseCache {
       }
 
       const postCount: string[] = await this.client.HMGET(`users:${currentUserId}`, 'postsCount');
-      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
-      multi.ZADD('post', { score: parseInt(uId, 10), value: `${key}` });
-      multi.HSET(`posts:${key}`,dataToSave);
+
+      // ZADD 명령 실행
+      await this.client.ZADD('post', { score: parseInt(uId, 10), value: `${key}` });
+
+      // HSET 명령 실행
+      for (let i = 0; i < dataToSave.length; i += 2) {
+        // dataToSave[i]는 키(필드 이름), dataToSave[i + 1]는 값
+        // 예: i가 0일 때 => HSET('users:key', '_id', '123')
+        //     i가 2일 때 => HSET('users:key', 'username', 'john')
+        await this.client.HSET(`posts:${key}`, dataToSave[i], dataToSave[i + 1]);
+      }
+
+      // postsCount 업데이트
       const count: number = parseInt(postCount[0], 10) + 1;
-      multi.HSET(`users:${currentUserId}`, 'postsCount', count);
-      multi.exec();
+      await this.client.HSET(`users:${currentUserId}`, 'postsCount', count);
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
