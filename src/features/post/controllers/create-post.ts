@@ -2,6 +2,7 @@ import { joiValidation } from '@global/decorators/joi-validation.decorator';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { postSchema } from '@post/schemes/post.schemes';
 import { PostCashe } from '@service/redis/post.cache';
+import { soketIOPostObject } from '@socket/post';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { ObjectId } from 'mongodb';
@@ -32,6 +33,8 @@ export class Create {
       createdAt: new Date(),
       reactions: { like: 0, love: 0, happy: 0, sad: 0, wow: 0, angry: 0 }
     } as IPostDocument;
+    
+    soketIOPostObject.emit('add post', createdPost);
 
     await postCache.savePostToCache({
       key: postObjectId,
@@ -39,6 +42,7 @@ export class Create {
       uId: `${req.currentUser!.uId}`,
       createdPost
     });
+
 
     res.status(HTTP_STATUS.CREATED).json({message: 'Post created successfully'});
   }

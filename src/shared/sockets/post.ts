@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io';
-import { server } from 'typescript';
 
-let soketIOPostObject: Server;
+export let soketIOPostObject: Server;
 
 export class SocketIOPostHandler {
   private io: Server;
