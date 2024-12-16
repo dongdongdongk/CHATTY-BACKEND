@@ -1,13 +1,13 @@
 import { Server, Socket } from 'socket.io';
 
-export let soketIOPostObject: Server;
+export let socketIOPostObject: Server;
 
 export class SocketIOPostHandler {
   private io: Server;
 
   constructor(io: Server) {
     this.io = io;
-    soketIOPostObject = io;
+    socketIOPostObject = io;
   }
 
   public listen(): void {

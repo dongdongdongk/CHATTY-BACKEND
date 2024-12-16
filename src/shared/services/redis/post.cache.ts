@@ -6,7 +6,7 @@ import { ISavePostToCache } from '@post/interfaces/post.interface';
 
 const log: Logger = config.createLogger('postCache');
 
-export class PostCashe extends BaseCache {
+export class PostCache extends BaseCache {
   constructor() {
     super('postCache');
   }

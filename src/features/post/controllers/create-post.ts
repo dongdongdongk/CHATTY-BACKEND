@@ -4,14 +4,15 @@ import { BadRequestError } from '@global/helpers/error-handler';
 import { IPostDocument } from '@post/interfaces/post.interface';
 import { postSchema, postWithImageSchema } from '@post/schemes/post.schemes';
 import { postQueue } from '@service/queues/post.queue';
-import { PostCashe } from '@service/redis/post.cache';
-import { soketIOPostObject } from '@socket/post';
+import { PostCache } from '@service/redis/post.cache';
+import { socketIOPostObject } from '@socket/post';
+
 import { UploadApiResponse } from 'cloudinary';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
 import { ObjectId } from 'mongodb';
 
-const postCache: PostCashe = new PostCashe();
+const postCache: PostCache = new PostCache();
 
 export class Create {
   @joiValidation(postSchema)
@@ -38,7 +39,7 @@ export class Create {
       reactions: { like: 0, love: 0, happy: 0, sad: 0, wow: 0, angry: 0 }
     } as IPostDocument;
     
-    soketIOPostObject.emit('add post', createdPost);
+    socketIOPostObject.emit('add post', createdPost);
 
     await postCache.savePostToCache({
       key: postObjectId,
@@ -82,7 +83,7 @@ export class Create {
       reactions: { like: 0, love: 0, happy: 0, sad: 0, wow: 0, angry: 0 }
     } as IPostDocument;
     
-    soketIOPostObject.emit('add post', createdPost);
+    socketIOPostObject.emit('add post', createdPost);
 
     await postCache.savePostToCache({
       key: postObjectId,
