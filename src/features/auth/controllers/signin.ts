@@ -61,7 +61,7 @@ export class SignIn {
     // const template: string = resetPasswordTemplate.passwordResetTemplate(templateParams);
     // emailQueue.addEmailJob('forgotPasswordEmail',{ template, receiverEmail: 'roosevelt.quigley@ethereal.email', subject:'password reset email'});
 
-    // req.session = { jwt: userJwt};
+    req.session = { jwt: userJwt};
     
     const userDocument: IUserDocument = {
       ...user,

@@ -2,7 +2,8 @@ import { BaseCache } from '@service/redis/base.caches';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { ServerError } from '@global/helpers/error-handler';
-import { ISavePostToCache } from '@post/interfaces/post.interface';
+import { IPostDocument, ISavePostToCache } from '@post/interfaces/post.interface';
+import { Helpers } from '@global/helpers/heplers';
 
 const log: Logger = config.createLogger('postCache');
 
@@ -95,6 +96,30 @@ export class PostCache extends BaseCache {
       // postsCount 업데이트
       const count: number = parseInt(postCount[0], 10) + 1;
       await this.client.HSET(`users:${currentUserId}`, 'postsCount', count);
+    } catch (error) {
+      log.error(error);
+      throw new ServerError('Server error. Try again.');
+    }
+  }
+
+  public async getPostFromCashe(key: string, start: number, end: number): Promise<IPostDocument[]> {
+    try {
+      if (!this.client.isOpen) {
+        await this.client.connect();
+      }
+
+      const reply: string[] = await this.client.ZRANGE(key, start, end, {REV : true}); 
+      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
+      for( const value of reply) {
+        multi.HGETALL(`post${value}`);
+      }
+      const replies:any = await multi.exec();
+      const postReplies: IPostDocument[] = [];
+      for(const post of replies as IPostDocument[]) {
+        post.commentsCount = Helpers.parseJson(`${post}`)
+      }
+      return [];
+
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
