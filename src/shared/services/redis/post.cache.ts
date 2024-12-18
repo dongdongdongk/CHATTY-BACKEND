@@ -2,7 +2,7 @@ import { BaseCache } from '@service/redis/base.caches';
 import Logger from 'bunyan';
 import { config } from '@root/config';
 import { ServerError } from '@global/helpers/error-handler';
-import { IPostDocument, ISavePostToCache } from '@post/interfaces/post.interface';
+import { IPostDocument, IReactions, ISavePostToCache } from '@post/interfaces/post.interface';
 import { Helpers } from '@global/helpers/heplers';
 
 const log: Logger = config.createLogger('postCache');
@@ -113,12 +113,16 @@ export class PostCache extends BaseCache {
       for( const value of reply) {
         multi.HGETALL(`post${value}`);
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const replies:any = await multi.exec();
       const postReplies: IPostDocument[] = [];
       for(const post of replies as IPostDocument[]) {
-        post.commentsCount = Helpers.parseJson(`${post}`)
+        post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
+        post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
+        post.createdAt = Helpers.parseJson(`${post.createdAt}`) as Date;
+        postReplies.push(post);
       }
-      return [];
+      return postReplies;
 
     } catch (error) {
       log.error(error);
