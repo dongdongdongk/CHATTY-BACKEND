@@ -81,16 +81,20 @@ export class PostCache extends BaseCache {
 
     try {
       if (!this.client.isOpen) {
+        log.info('Connecting to Redis...');
         await this.client.connect();
       }
 
       const postCount: string[] = await this.client.HMGET(`users:${currentUserId}`, 'postsCount');
+      log.info(`Fetched post count for user ${currentUserId}: ${postCount}`);
 
       // ZADD 명령 실행
+      log.info(`Adding post key ${key} with score ${uId} to sorted set.`);
       await this.client.ZADD('post', { score: parseInt(uId, 10), value: `${key}` });
 
       // HSET 명령 실행
       for (let i = 0; i < dataToSave.length; i += 2) {
+        log.info(`Setting field ${dataToSave[i]} with value ${dataToSave[i + 1]} for key post:${key}`);
         // dataToSave[i]는 키(필드 이름), dataToSave[i + 1]는 값
         // 예: i가 0일 때 => HSET('users:key', '_id', '123')
         //     i가 2일 때 => HSET('users:key', 'username', 'john')
@@ -99,6 +103,7 @@ export class PostCache extends BaseCache {
 
       // postsCount 업데이트
       const count: number = parseInt(postCount[0], 10) + 1;
+      log.info(`Updating posts count for user ${currentUserId}: ${count}`);
       await this.client.HSET(`users:${currentUserId}`, 'postsCount', count);
     } catch (error) {
       log.error(error);
@@ -110,16 +115,22 @@ export class PostCache extends BaseCache {
   public async getPostFromCashe(key: string, start: number, end: number): Promise<IPostDocument[]> {
     try {
       if (!this.client.isOpen) {
+        log.info('Connecting to Redis...');
         await this.client.connect();
       }
 
-      const reply: string[] = await this.client.ZRANGE(key, start, end, {REV : true}); 
+      log.info(`Fetching posts from sorted set ${key}, range ${start} to ${end}`);
+      const reply: string[] = await this.client.ZRANGE(key, start, end); 
+      log.info(`ZRANGE result for ${key}: ${reply}`);
+
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
       for( const value of reply) {
+        log.info(`Fetching hash for post:${value}`);
         multi.HGETALL(`post:${value}`);
       }
 
       const replies: PostCacheMultiType = await multi.exec() as PostCacheMultiType;
+      log.info(`Fetched data for posts: ${JSON.stringify(replies)}`);
       const postReplies: IPostDocument[] = [];
       for(const post of replies as IPostDocument[]) {
         post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
@@ -141,7 +152,9 @@ export class PostCache extends BaseCache {
         await this.client.connect();
       }
 
+      log.info('Fetching total posts count from sorted set "post"');
       const count: number = await  this.client.ZCARD('post');
+      log.info(`Total posts count: ${count}`);
       return count;
 
     } catch (error) {
