@@ -8,8 +8,7 @@ import { RedisCommandRawReply } from '@redis/client/dist/lib/commands';
 
 const log: Logger = config.createLogger('postCache');
 
-
-export type PostCacheMultiType = string | number | Buffer | RedisCommandRawReply[] | IPostDocument | IPostDocument[]
+export type PostCacheMultiType = string | number | Buffer | RedisCommandRawReply[] | IPostDocument | IPostDocument[];
 
 export class PostCache extends BaseCache {
   constructor() {
@@ -111,7 +110,6 @@ export class PostCache extends BaseCache {
     }
   }
 
-  
   public async getPostFromCashe(key: string, start: number, end: number): Promise<IPostDocument[]> {
     try {
       if (!this.client.isOpen) {
@@ -120,26 +118,28 @@ export class PostCache extends BaseCache {
       }
 
       log.info(`Fetching posts from sorted set ${key}, range ${start} to ${end}`);
-      const reply: string[] = await this.client.ZRANGE(key, start, end); 
+      const reply: string[] = await this.client.ZRANGE(key, start, end);
       log.info(`ZRANGE result for ${key}: ${reply}`);
 
-      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
-      for( const value of reply) {
+      const reversedReply = reply.reverse(); // 역순으로 정렬
+      log.info(`Reversed order: ${reversedReply}`);
+
+      const multi = this.client.multi();
+      for (const value of reversedReply) {
         log.info(`Fetching hash for post:${value}`);
         multi.HGETALL(`post:${value}`);
       }
 
-      const replies: PostCacheMultiType = await multi.exec() as PostCacheMultiType;
+      const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
       log.info(`Fetched data for posts: ${JSON.stringify(replies)}`);
       const postReplies: IPostDocument[] = [];
-      for(const post of replies as IPostDocument[]) {
+      for (const post of replies as IPostDocument[]) {
         post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
         post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
         post.createdAt = Helpers.parseJson(`${post.createdAt}`) as Date;
         postReplies.push(post);
       }
       return postReplies;
-
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
@@ -153,32 +153,35 @@ export class PostCache extends BaseCache {
       }
 
       log.info('Fetching total posts count from sorted set "post"');
-      const count: number = await  this.client.ZCARD('post');
+      const count: number = await this.client.ZCARD('post');
       log.info(`Total posts count: ${count}`);
       return count;
-
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
     }
   }
 
-
   public async getPostsWithImagesFromCashe(key: string, start: number, end: number): Promise<IPostDocument[]> {
     try {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
+      log.info(`Fetching posts from sorted set ${key}, range ${start} to ${end}`);
+      const reply: string[] = await this.client.ZRANGE(key, start, end);
+      log.info(`ZRANGE result for ${key}: ${reply}`);
 
-      const reply: string[] = await this.client.ZRANGE(key, start, end, {REV : true}); 
-      const multi: ReturnType<typeof this.client.multi> = this.client.multi();
-      for( const value of reply) {
+      const reversedReply = reply.reverse(); // 역순으로 정렬
+      log.info(`Reversed order: ${reversedReply}`);
+      const multi = this.client.multi();
+      for (const value of reversedReply) {
+        log.info(`Fetching hash for post:${value}`);
         multi.HGETALL(`post:${value}`);
       }
 
-      const replies: PostCacheMultiType = await multi.exec() as PostCacheMultiType;
+      const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
       const postWithImage: IPostDocument[] = [];
-      for(const post of replies as IPostDocument[]) {
+      for (const post of replies as IPostDocument[]) {
         if ((post.imgId && post.imgVersion) || post.gifUrl) {
           post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
           post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
@@ -187,7 +190,6 @@ export class PostCache extends BaseCache {
         }
       }
       return postWithImage;
-
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
@@ -200,22 +202,21 @@ export class PostCache extends BaseCache {
         await this.client.connect();
       }
 
-      const reply: string[] = await this.client.ZRANGE(key, uId, uId, {REV : true, BY: 'SCORE'}); 
+      const reply: string[] = await this.client.ZRANGE(key, uId, uId, { REV: true, BY: 'SCORE' });
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
-      for( const value of reply) {
+      for (const value of reply) {
         multi.HGETALL(`post:${value}`);
       }
 
-      const replies: PostCacheMultiType = await multi.exec() as PostCacheMultiType;
+      const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
       const postReplies: IPostDocument[] = [];
-      for(const post of replies as IPostDocument[]) {
+      for (const post of replies as IPostDocument[]) {
         post.commentsCount = Helpers.parseJson(`${post.commentsCount}`) as number;
         post.reactions = Helpers.parseJson(`${post.reactions}`) as IReactions;
         post.createdAt = Helpers.parseJson(`${post.createdAt}`) as Date;
         postReplies.push(post);
       }
       return postReplies;
-
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
@@ -228,9 +229,8 @@ export class PostCache extends BaseCache {
         await this.client.connect();
       }
 
-      const count: number = await  this.client.ZCOUNT('post', uId, uId);
+      const count: number = await this.client.ZCOUNT('post', uId, uId);
       return count;
-
     } catch (error) {
       log.error(error);
       throw new ServerError('Server error. Try again.');
