@@ -97,7 +97,7 @@ export class PostCache extends BaseCache {
         // dataToSave[i]는 키(필드 이름), dataToSave[i + 1]는 값
         // 예: i가 0일 때 => HSET('users:key', '_id', '123')
         //     i가 2일 때 => HSET('users:key', 'username', 'john')
-        await this.client.HSET(`post:${key}`, dataToSave[i], dataToSave[i + 1]);
+        await this.client.HSET(`posts:${key}`, dataToSave[i], dataToSave[i + 1]);
       }
 
       // postsCount 업데이트
@@ -127,7 +127,7 @@ export class PostCache extends BaseCache {
       const multi = this.client.multi();
       for (const value of reversedReply) {
         log.info(`Fetching hash for post:${value}`);
-        multi.HGETALL(`post:${value}`);
+        multi.HGETALL(`posts:${value}`);
       }
 
       const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
@@ -176,7 +176,7 @@ export class PostCache extends BaseCache {
       const multi = this.client.multi();
       for (const value of reversedReply) {
         log.info(`Fetching hash for post:${value}`);
-        multi.HGETALL(`post:${value}`);
+        multi.HGETALL(`posts:${value}`);
       }
 
       const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
@@ -205,7 +205,7 @@ export class PostCache extends BaseCache {
       const reply: string[] = await this.client.ZRANGE(key, uId, uId, { REV: true, BY: 'SCORE' });
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
       for (const value of reply) {
-        multi.HGETALL(`post:${value}`);
+        multi.HGETALL(`posts:${value}`);
       }
 
       const replies: PostCacheMultiType = (await multi.exec()) as PostCacheMultiType;
