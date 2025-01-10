@@ -30,7 +30,7 @@ export class Update {
     const postUpdated = await postCache.updatePostInCache(postId, updatedPost);
     socketIOPostObject.emit('update post', postUpdated, 'posts');
     postQueue.addPostJob('updatePostInDB', { key: postId, value: updatedPost });
-    res.status(HTTP_STATUS.OK).json({ message: 'Post update successfully' });
+    res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully' });
   }
 
   @joiValidation(postWithImageSchema)
@@ -111,7 +111,7 @@ export class Update {
 
         // 소켓 이벤트 발생 및 큐 작업 추가
         socketIOPostObject.emit('update post', postUpdated, 'posts');
-        await postQueue.addPostJob('updatePostInDB', { key: postId, value: updatedPost });
+        postQueue.addPostJob('updatePostInDB', { key: postId, value: updatedPost });
 
         return result as UploadApiResponse;
       } catch (error) {
