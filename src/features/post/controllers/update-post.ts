@@ -29,7 +29,7 @@ export class Update {
     } as IPostDocument;
     const postUpdated = await postCache.updatePostInCache(postId, updatedPost);
     socketIOPostObject.emit('update post', postUpdated, 'posts');
-    postQueue.addPostJob('updatePostInDB', { key: postId, value: updatedPost });
+    postQueue.addPostJob('updatePostInDB', { key: postId, value: postUpdated });
     res.status(HTTP_STATUS.OK).json({ message: 'Post updated successfully' });
   }
 
@@ -70,7 +70,7 @@ export class Update {
     } as IPostDocument;
     const postUpdated = await postCache.updatePostInCache(postId, updatedPost);
     socketIOPostObject.emit('update post', postUpdated, 'posts');
-    postQueue.addPostJob('updatePostInDB', { key: postId, value: updatedPost });
+    postQueue.addPostJob('updatePostInDB', { key: postId, value: postUpdated });
   }
 
   private async addImageToExistingPost(req: Request): Promise<UploadApiResponse> {
