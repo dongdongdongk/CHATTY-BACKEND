@@ -32,6 +32,7 @@
       "@socket/*" : ["./src/shared/sockets/*"],
       "@worker/*" : ["./src/shared/workers/*"],
       "@post/*" : ["./src/features/post/*"],
+      "@reaction/*" : ["./src/features/reactions/*"],
       // "@mock/*" : ["./src/mocks"], 여긴 지워줘도 상관없다
       "@root/*" : ["./src/*"]
     }

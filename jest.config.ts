@@ -30,6 +30,7 @@ const config: Config.InitialOptions = {
     '@post/(.*)': '<rootDir>/src/features/post/$1',
     '@worker/(.*)': '<rootDir>/src/shared/workers/$1',
     '@root/(.*)': '<rootDir>/src/$1',
+    '@reaction/(.*)': '<rootDir>/src/features/reactions/$1',
   },
 };
 
