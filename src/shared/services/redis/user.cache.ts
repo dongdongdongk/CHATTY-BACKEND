@@ -5,7 +5,7 @@ import Logger from 'bunyan';
 import { ServerError } from '@global/helpers/error-handler';
 import { Helpers } from '@global/helpers/heplers';
 
-const log: Logger = config.createLogger('redisConnection');
+const log: Logger = config.createLogger('userCache');
 
 export class UserCache extends BaseCache {
   constructor() {
