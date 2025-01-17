@@ -7,8 +7,7 @@ import { authService } from '@service/db/auth.service';
 import { BadRequestError } from '@global/helpers/error-handler';
 import { loginSchema } from '@auth/schemes/signin';
 import { IAuthDocument } from '@auth/interfaces/auth.interface';
-import { IUserDocument } from '@user/interfaces/user.interface';
-import { userService } from '@service/db/user.service';
+
 // import { forgotPasswordTemplate } from '@service/emails/templates/forgot-password/forgot-password-template';
 // import { emailQueue } from '@service/queues/email.queue';
 // import moment from 'moment';
@@ -30,7 +29,7 @@ export class SignIn {
       throw new BadRequestError('Invalid credentials');
     }
 
-    const user: IUserDocument = await userService.getUserByAuthId(`${existingUser._id}`);
+    // const user: IUserDocument = await userService.getUserByAuthId(`${existingUser._id}`);
 
 
     const userJwt: string = JWT.sign(
@@ -63,16 +62,16 @@ export class SignIn {
 
     req.session = { jwt: userJwt};
     
-    const userDocument: IUserDocument = {
-      ...user,
-      authId: existingUser!._id,
-      username: existingUser!.username,
-      email: existingUser!.email,
-      avatarColor: existingUser!.avatarColor,
-      uId: existingUser!.uId,
-      createdAt: existingUser!.createdAt,
-    } as IUserDocument;
+    // const userDocument: IUserDocument = {
+    //   ...user,
+    //   authId: existingUser!._id,
+    //   username: existingUser!.username,
+    //   email: existingUser!.email,
+    //   avatarColor: existingUser!.avatarColor,
+    //   uId: existingUser!.uId,
+    //   createdAt: existingUser!.createdAt,
+    // } as IUserDocument;
     
-    res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: userDocument, token: userJwt});
+    res.status(HTTP_STATUS.OK).json({ message: 'User login successfully', user: existingUser, token: userJwt});
   }
 }

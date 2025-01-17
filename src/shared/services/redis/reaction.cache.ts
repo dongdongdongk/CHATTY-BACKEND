@@ -10,7 +10,7 @@ const log: Logger = config.createLogger('reactionCache');
 
 export class ReactionCache extends BaseCache {
   constructor() {
-    super('reactionCache');
+    super('reactionsCache');
   }
 
   public async savePostReactionToCache(
@@ -30,7 +30,7 @@ export class ReactionCache extends BaseCache {
 
       if (type) {
         await this.client.LPUSH(`reactions:${key}`, JSON.stringify(reaction));
-        const dataToSave: string[] = ['reaction', JSON.stringify(postReactions)];
+        const dataToSave: string[] = ['reactions', JSON.stringify(postReactions)];
         await this.client.HSET(`posts:${key}`, dataToSave);
       }
 
@@ -48,7 +48,7 @@ export class ReactionCache extends BaseCache {
       const response: string[] = await this.client.LRANGE(`reactions:${key}`,0, -1);
       const multi: ReturnType<typeof this.client.multi> = this.client.multi();
       const userPreviousReaction: IReactionDocument = this.getPreviousReaction(response, username) as IReactionDocument;
-      multi.LREM(`reactions${key}`, 1, JSON.stringify(userPreviousReaction));
+      multi.LREM(`reactions:${key}`, 1, JSON.stringify(userPreviousReaction));
       await multi.exec();
 
       const dataToSave: string[] = ['reactions', JSON.stringify(postReactions)];
