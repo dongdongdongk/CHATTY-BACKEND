@@ -1,6 +1,7 @@
 import { joiValidation } from '@global/decorators/joi-validation.decorator';
-import { IReactionDocument } from '@reaction/interfaces/reaction.interface';
+import { IReactionDocument, IReactionJob } from '@reaction/interfaces/reaction.interface';
 import { addReactionSchema } from '@reaction/schemes/reactions';
+import { reactionQueue } from '@service/queues/reaction.queue';
 import { ReactionCache } from '@service/redis/reaction.cache';
 import { Request, Response } from 'express';
 import HTTP_STATUS from 'http-status-codes';
@@ -23,6 +24,17 @@ export class Add {
 
     await reactionCache.savePostReactionToCache(postId, reactionObject, postReactions, type, previousReaction);
 
+    const databaseReaction: IReactionJob = {
+      postId,
+      userTo,
+      userFrom: req.currentUser!.userId,
+      username: req.currentUser!.username,
+      type,
+      previousReaction,
+      reactionObject,
+    };
+
+    reactionQueue.addReactionJob('addReactionToDB', databaseReaction);
     res.status(HTTP_STATUS.OK).json({message: 'Reaction added successfully'});
   }
 }

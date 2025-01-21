@@ -9,7 +9,7 @@ const userCache: UserCache = new UserCache();
 
 class ReactionService {
   public async addReactionDataToDB(reactionData: IReactionJob): Promise<void> {
-    const { postId, userTo, userForm, username, type, previousReaction, reactionObject } = reactionData;
+    const { postId, userTo, userFrom, username, type, previousReaction, reactionObject } = reactionData;
     const updatedReaction: [IUserDocument, IReactionDocument, IPostDocument] = await Promise.all([
       userCache.getUserFromCache(`${userTo}`),
       ReactionModel.findOneAndReplace({ postId, type: previousReaction, username}, reactionObject, { upsert: true}),
